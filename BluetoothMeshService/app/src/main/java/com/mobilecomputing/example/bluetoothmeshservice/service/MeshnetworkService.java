@@ -1,9 +1,14 @@
 package com.mobilecomputing.example.bluetoothmeshservice.service;
 
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Binder;
 import android.os.IBinder;
+import android.os.Messenger;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Created by Jan Urbansky on 02.03.2016.
@@ -11,6 +16,10 @@ import android.util.Log;
 public final class MeshnetworkService extends Service {
 
     private final static String TAG = "fhflMeshnetworkService";
+
+    private final IBinder mBinder = new MeshnetworkBinder();
+    private MeshnetworkService mMeshnetworkService = null;
+
 
     public static boolean IS_RUNNING = false;
 
@@ -27,13 +36,13 @@ public final class MeshnetworkService extends Service {
         Log.i(TAG, "Service destroyed!");
         Log.d(TAG, "onDestroy");
         super.onDestroy();
-        IS_RUNNING = false; //TODO: not needed!
+        IS_RUNNING = false; //TODO: not needed! -> if the service is killed, it has to be recreated
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
-        return super.onStartCommand(intent, flags, startId);
+        return Service.START_STICKY;
     }
 
     @Override
@@ -51,6 +60,20 @@ public final class MeshnetworkService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(TAG, "onBind");
-        return null;
+        return mBinder;
+    }
+
+    public void say_hello(){
+        Toast.makeText(getApplicationContext(), "hello", Toast.LENGTH_SHORT).show();
+    }
+
+
+
+
+
+    public class MeshnetworkBinder extends Binder{
+        MeshnetworkService getService(){
+            return MeshnetworkService.this;
+        }
     }
 }

@@ -2,8 +2,11 @@ package com.mobilecomputing.example.bluetoothmeshservice.service;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.util.Log;
 
 import com.mobilecomputing.example.bluetoothmeshservice.MainActivity;
@@ -24,22 +27,22 @@ public class BluetoothMeshnetworkClient {
     private static final String TAG = "fhflBTMeshClient";
     private INetworkEventsListener networkEventsListener = null;
     private IDebugInterface debugInterface = null;
+    private MeshnetworkService mMeshnetworkService = null;
+    private Activity mActivity;
 
     public void setDebugInterface(IDebugInterface debugInterface) {
         Log.d(TAG, "setDebugInterface");
         this.debugInterface = debugInterface;
     }
 
-    private Activity mActivity;
-    private BluetoothServiceConnection mServiceConnection = null;
+
+
 
 
     public BluetoothMeshnetworkClient(Activity mActivity, INetworkEventsListener networkEventsListener) {
         Log.d(TAG, "BluetoothMeshnetworkClient");
         this.networkEventsListener = networkEventsListener;
         this.mActivity = mActivity;
-
-        mServiceConnection = new BluetoothServiceConnection();
     }
 
     /**
@@ -56,7 +59,7 @@ public class BluetoothMeshnetworkClient {
             mActivity.startService(meshNetworkServiceIntent);
         }
         Log.i(TAG, "binding to Service");
-        mActivity.bindService(meshNetworkServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        mActivity.bindService(meshNetworkServiceIntent, mConnection, Context.BIND_AUTO_CREATE);
 
     }
 
@@ -69,6 +72,24 @@ public class BluetoothMeshnetworkClient {
         this.networkEventsListener = networkEventsListener;
     }
 
+    private ServiceConnection mConnection = new ServiceConnection() {
+        private final static String TAG = "fhflBTServiceConnection";
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "onServiceConnected");
+            mMeshnetworkService = ((MeshnetworkService.MeshnetworkBinder)service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "onServiceDisconnected");
+
+        }
+    };
+
+    public void doSomeDebugging(){
+        mMeshnetworkService.say_hello();
+    }
 
 
     /**
@@ -77,8 +98,8 @@ public class BluetoothMeshnetworkClient {
     public void disconnectFromMeshnetworkService(){
         Log.i(TAG, "disconnecting from Meshnetwork Service");
         Log.d(TAG, "disconnectFromMeshnetworkService");
-        mActivity.unbindService(mServiceConnection);
-        mServiceConnection = null;
+        mActivity.unbindService(mConnection);
+        mConnection = null;
 
     }
 
