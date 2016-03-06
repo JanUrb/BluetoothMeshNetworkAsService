@@ -14,6 +14,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+        <service
+            android:name=".service.MeshnetworkService"
+            android:enabled="true"
+            android:label="Bluetooth Meshnetwork Service"/>
     </application>
 
 </manifest>
