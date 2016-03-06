@@ -16,7 +16,7 @@ public interface INetworkEventsListener {
      * Is called when a directly connected device disconnects.
      * @param bluetoothDevice
      */
-    public void onDeciveDisconnected(BluetoothDevice bluetoothDevice);
+    public void onDeviceDisconnected(BluetoothDevice bluetoothDevice);
 
     /**
      * Is called when the client receives a message directed at it.

@@ -17,7 +17,7 @@ public final class BluetoothServiceConnection implements ServiceConnection {
     private boolean mBound = false;
 
     protected BluetoothServiceConnection() {
-
+        Log.d(TAG, "BluetoothServiceConnection()");
     }
 
     @Override

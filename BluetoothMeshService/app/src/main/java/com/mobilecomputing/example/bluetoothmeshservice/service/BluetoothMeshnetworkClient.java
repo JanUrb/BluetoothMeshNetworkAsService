@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.mobilecomputing.example.bluetoothmeshservice.MainActivity;
+import com.mobilecomputing.example.bluetoothmeshservice.client.IDebugInterface;
 import com.mobilecomputing.example.bluetoothmeshservice.client.INetworkEventsListener;
 import com.mobilecomputing.example.bluetoothmeshservice.service.MeshnetworkService;
 
@@ -21,7 +22,14 @@ import java.util.List;
  */
 public class BluetoothMeshnetworkClient {
     private static final String TAG = "fhflBTMeshClient";
-    private INetworkEventsListener networkEventsListener;
+    private INetworkEventsListener networkEventsListener = null;
+    private IDebugInterface debugInterface = null;
+
+    public void setDebugInterface(IDebugInterface debugInterface) {
+        Log.d(TAG, "setDebugInterface");
+        this.debugInterface = debugInterface;
+    }
+
     private Activity mActivity;
     private BluetoothServiceConnection mServiceConnection = null;
 
@@ -60,6 +68,8 @@ public class BluetoothMeshnetworkClient {
         Log.d(TAG, "setNetworkEventsListener");
         this.networkEventsListener = networkEventsListener;
     }
+
+
 
     /**
      * Use this in your activities' onPause method.

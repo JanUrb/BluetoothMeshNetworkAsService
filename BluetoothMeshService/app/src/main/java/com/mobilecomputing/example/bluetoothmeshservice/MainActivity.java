@@ -5,12 +5,15 @@ package com.mobilecomputing.example.bluetoothmeshservice;
  */
 
 import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.mobilecomputing.example.bluetoothmeshservice.client.IDebugInterface;
+import com.mobilecomputing.example.bluetoothmeshservice.client.INetworkEventsListener;
 import com.mobilecomputing.example.bluetoothmeshservice.service.BluetoothMeshnetworkClient;
 
 public class MainActivity extends Activity {
@@ -25,6 +28,42 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Example App with Log Fragment
+        fllog.Log.init(true, false);
+        getFragmentManager().beginTransaction().replace(R.id.log_fragment_container, fllog.Log.getFragment()).commit();
+
+
+        meshnetworkClient = new BluetoothMeshnetworkClient(this, null); //Todo: Transistent storage!
+        meshnetworkClient.setNetworkEventsListener(new INetworkEventsListener() {
+            private static final String TAG = "fhflINetwEvents";
+
+            @Override
+            public void onDeciveConnected(BluetoothDevice bluetoothDevice) {
+                Log.d(TAG, "onDeviceConnected");
+            }
+
+            @Override
+            public void onDeviceDisconnected(BluetoothDevice bluetoothDevice) {
+                Log.d(TAG, "onDeviceDisconnected");
+            }
+
+            @Override
+            public void onMessageReceived() {
+                Log.d(TAG, "onMessageReceived()");
+            }
+
+            @Override
+            public void onMessageTrafficReceived() {
+                Log.d(TAG, "onMessageTrafficeReceived");
+            }
+        });
+
+        meshnetworkClient.setDebugInterface(new IDebugInterface() {
+            @Override
+            public void onDebugOutput(String TAG, String debugmessage) {
+                fllog.Log.d(TAG, debugmessage);
+            }
+        });
 
         startServiceButton = (Button) findViewById(R.id.startServiceButton);
         bindServiceButton = (Button) findViewById(R.id.bindServiceButton);
@@ -77,7 +116,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        meshnetworkClient = new BluetoothMeshnetworkClient(this, null); //Todo: Transistent storage!
 
     }
 
