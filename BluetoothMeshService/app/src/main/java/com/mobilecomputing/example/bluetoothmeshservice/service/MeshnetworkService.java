@@ -21,7 +21,8 @@ public final class MeshnetworkService extends Service {
     private MeshnetworkService mMeshnetworkService = null;
 
 
-    public static boolean IS_RUNNING = false;
+
+    private boolean IS_RUNNING = false;
 
     @Override
     public void onCreate() {
@@ -42,6 +43,10 @@ public final class MeshnetworkService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
+        if(!IS_RUNNING){
+            IS_RUNNING = true;
+            //do something
+        }
         return Service.START_STICKY;
     }
 
