@@ -16,16 +16,16 @@ public final class ServerThread extends Thread {
     public static final String TAG = "fhflServerThread";
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothServerSocket mServerSocket;
-    private Controller mController;
+    private BluetoothComController mController;
     private String mServiceName;
 
 
     /**
      * @param btAdapter   BluetoothAdapter
-     * @param controller  Controller
+     * @param controller  BluetoothComController
      * @param serviceName String
      */
-    protected ServerThread(BluetoothAdapter btAdapter, Controller controller, String serviceName) {
+    protected ServerThread(BluetoothAdapter btAdapter, BluetoothComController controller, String serviceName) {
         mBluetoothAdapter = btAdapter;
         mController = controller;
         mServiceName = serviceName;
@@ -41,7 +41,7 @@ public final class ServerThread extends Thread {
                 // MY_UUID is the app's UUID string, also used by the client code
                 debugOut("ServerThread(): create service-record");
 
-                tmp = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(mServiceName, Controller.MY_UUID);
+                tmp = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(mServiceName, BluetoothComController.MY_UUID);
             } catch (IOException e) {
                 debugOut("ServerThread(): Error: IOException during get server-socket !!!");
                 return;
@@ -70,10 +70,10 @@ public final class ServerThread extends Thread {
             // If a connection was accepted
             if (socket != null) {
                 /*
-                Sendet den BluetoothSocket an den Controller. Dieser liest den Socket aus und startet einen
+                Sendet den BluetoothSocket an den BluetoothComController. Dieser liest den Socket aus und startet einen
                 ServerThread.
                 */
-                mController.obtainMessage(Controller.SmMessage.AT_MANAGE_CONNECTED_SOCKET_AS_SERVER.ordinal(),
+                mController.obtainMessage(BluetoothComController.SmMessage.AT_MANAGE_CONNECTED_SOCKET_AS_SERVER.ordinal(),
                         -1, -1, socket).sendToTarget();
                 try {
                     mServerSocket.close();
@@ -102,7 +102,7 @@ public final class ServerThread extends Thread {
     }
 
     private void debugOut(String str) {
-        mController.obtainMessage(Controller.SmMessage.AT_DEBUG_SERVER.ordinal(),
+        mController.obtainMessage(BluetoothComController.SmMessage.AT_DEBUG_SERVER.ordinal(),
                 -1, -1, str).sendToTarget();
     }
 

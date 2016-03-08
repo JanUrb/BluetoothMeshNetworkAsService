@@ -1,14 +1,13 @@
 package com.mobilecomputing.example.bluetoothmeshservice.service;
 
 import android.app.Service;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.Messenger;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.mobilecomputing.example.bluetoothmeshservice.service.bluetooth.BluetoothComController;
 
 /**
  * Created by Jan Urbansky on 02.03.2016.
@@ -18,8 +17,8 @@ public final class MeshnetworkService extends Service {
     private final static String TAG = "fhflMeshnetworkService";
 
     private final IBinder mBinder = new MeshnetworkBinder();
-    private MeshnetworkService mMeshnetworkService = null;
 
+    private BluetoothComController mBluetoothController = null;
 
 
     private boolean IS_RUNNING = false;
@@ -37,15 +36,23 @@ public final class MeshnetworkService extends Service {
         Log.i(TAG, "Service destroyed!");
         Log.d(TAG, "onDestroy");
         super.onDestroy();
-        IS_RUNNING = false; //TODO: not needed! -> if the service is killed, it has to be recreated
+        IS_RUNNING = false; //not needed! -> if the service is killed, it has to be recreated
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
         if(!IS_RUNNING){
-            IS_RUNNING = true;
             //do something
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    mBluetoothController = new BluetoothComController();
+
+                }
+            }).start();
+            IS_RUNNING = true;
+
         }
         return Service.START_STICKY;
     }

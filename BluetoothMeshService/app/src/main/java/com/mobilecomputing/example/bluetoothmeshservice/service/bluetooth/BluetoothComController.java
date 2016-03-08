@@ -24,7 +24,7 @@ import fllog.Log;
  * <p/>
  * Übernommen aus dem RFCOMM-Server Projekt und unserem Projekt angepasst.
  */
-public final class Controller extends StateMachine {
+public final class BluetoothComController extends StateMachine {
 
     private static final String TAG = "fhflController";
     private Activity mActivity = null;
@@ -87,8 +87,8 @@ public final class Controller extends StateMachine {
 
     public static SmMessage[] messageIndex = SmMessage.values();
 
-    protected Controller() {
-        Log.d(TAG, "Controller()");
+    public BluetoothComController() {
+        Log.d(TAG, "BluetoothComController()");
         messageStorage = new MessageStorage();
     }
 
@@ -552,7 +552,7 @@ public final class Controller extends StateMachine {
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     Log.d(TAG, "onReceive - device name: " + device.getName() + " Device ID: " + device.getAddress());
                     //wenn die Grenze !validDeviceFound nicht eingebaut wird, können viele Threads vom
-                    //Controller gestartet werden. Dies führt zu unberechenbarem Verhalten.
+                    //BluetoothComController gestartet werden. Dies führt zu unberechenbarem Verhalten.
                     if (BluetoothModel.BANNED_DEVICE_ADDRESSES.contains(device.getAddress())) {
                         Log.d(TAG, "(Ignored device) found banned device: " + device.getName() + "MAC: " + device.getAddress());
                     } else if (!bt_model.isDeviceAlreadyConnected(device.getAddress()) && !validDeviceFound) {

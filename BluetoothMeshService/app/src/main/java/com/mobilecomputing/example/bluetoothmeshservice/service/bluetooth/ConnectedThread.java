@@ -18,7 +18,7 @@ import java.io.OutputStream;
 public final class ConnectedThread extends Thread {
 
     public final static String TAG = "fhflConnectedThread";
-    private Controller mController;
+    private BluetoothComController mController;
     private final BluetoothSocket mSocket;
     private final InputStream mInStream;
     private final OutputStream mOutStream;
@@ -28,7 +28,7 @@ public final class ConnectedThread extends Thread {
      * @param socket
      * @param controller
      */
-    protected ConnectedThread(BluetoothSocket socket, Controller controller) {
+    protected ConnectedThread(BluetoothSocket socket, BluetoothComController controller) {
         mSocket = socket;
         mController = controller;
         InputStream tmpIn = null;
@@ -73,14 +73,14 @@ public final class ConnectedThread extends Thread {
             try {
                 // Read from the InputStream
                 bytes = mInStream.read(buffer);
-                mController.obtainMessage(Controller.SmMessage.CT_RECEIVED.ordinal(), bytes, -1, buffer)
+                mController.obtainMessage(BluetoothComController.SmMessage.CT_RECEIVED.ordinal(), bytes, -1, buffer)
                         .sendToTarget(); // obtain...(): delivers 'empty' message-object from a pool
             } catch (IOException e) {
                 debugOut("run(): IOException during read stream");
                 e.printStackTrace();
                 debugOut("Error: " + e.getMessage());
 
-                mController.obtainMessage(Controller.SmMessage.CT_CONNECTION_CLOSED.ordinal(), -1, -1, this.getId()).sendToTarget();
+                mController.obtainMessage(BluetoothComController.SmMessage.CT_CONNECTION_CLOSED.ordinal(), -1, -1, this.getId()).sendToTarget();
                 break;
             }
         }
@@ -110,7 +110,7 @@ public final class ConnectedThread extends Thread {
     private void debugOut(String str) {
         //C-ID steht für Connecton ID und ist ist die Thread ID.
         str = "C-ID " + this.getId() + ": " + str;
-        mController.obtainMessage(Controller.SmMessage.CT_DEBUG.ordinal(), -1, -1, str).sendToTarget();
+        mController.obtainMessage(BluetoothComController.SmMessage.CT_DEBUG.ordinal(), -1, -1, str).sendToTarget();
     }
 
 }

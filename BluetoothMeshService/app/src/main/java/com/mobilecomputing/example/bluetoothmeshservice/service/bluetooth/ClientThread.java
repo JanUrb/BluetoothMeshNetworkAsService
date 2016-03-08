@@ -21,11 +21,11 @@ public final class ClientThread extends Thread {
     private final BluetoothSocket mmSocket;
     private final BluetoothDevice mmDevice;
     private BluetoothAdapter mBluetoothAdapter;
-    private Controller mController;
+    private BluetoothComController mController;
 
 
     protected ClientThread(BluetoothDevice device, BluetoothAdapter bluetoothAdapter,
-                        Controller controller) {
+                        BluetoothComController controller) {
 
         // Use a temporary object that is later assigned to mmSocket,
         // because mmSocket is final
@@ -41,7 +41,7 @@ public final class ClientThread extends Thread {
         // Get a BluetoothSocket to connect with the given BluetoothDevice
         try {
 //
-            tmp = mmDevice.createRfcommSocketToServiceRecord(Controller.MY_UUID);
+            tmp = mmDevice.createRfcommSocketToServiceRecord(BluetoothComController.MY_UUID);
 //            Method m = device.getClass().getMethod("createRfcommSocket", new Class[] {int.class});
 //            tmp = (BluetoothSocket) m.invoke(device, 1);
         } catch (Exception e) {
@@ -49,7 +49,7 @@ public final class ClientThread extends Thread {
             Log.d(TAG, "Exception " + e.getMessage());
         }
 
-        //tmp = mmDevice.createRfcommSocketToServiceRecord(Controller.MY_UUID);
+        //tmp = mmDevice.createRfcommSocketToServiceRecord(BluetoothComController.MY_UUID);
 
         mmSocket = tmp;
     }
@@ -73,7 +73,7 @@ public final class ClientThread extends Thread {
             // aber nicht der Service.
             // An dieser Stelle scheitert eins meiner Testgeräte mit API LVL 16.
             mmSocket.connect();
-            mController.obtainMessage(Controller.SmMessage.AT_MANAGE_CONNECTED_SOCKET_AS_CLIENT.ordinal(),
+            mController.obtainMessage(BluetoothComController.SmMessage.AT_MANAGE_CONNECTED_SOCKET_AS_CLIENT.ordinal(),
                     -1, -1, mmSocket).sendToTarget();
         } catch (IOException connectException) {
             connectException.printStackTrace();
@@ -94,7 +94,7 @@ public final class ClientThread extends Thread {
             debugOut("ClientThread.run " + connectException.getMessage());
             Log.d(TAG, "connectingError: " + connectException.getMessage());
 
-            mController.obtainMessage(Controller.SmMessage.CONNECT_AS_SERVER.ordinal(),
+            mController.obtainMessage(BluetoothComController.SmMessage.CONNECT_AS_SERVER.ordinal(),
                     -1, -1, mmSocket).sendToTarget();
 
             try {
@@ -128,7 +128,7 @@ public final class ClientThread extends Thread {
             if (mController == null) {
                 throw new NullPointerException("Controller is null");
             }
-            mController.obtainMessage(Controller.SmMessage.AT_DEBUG_CLIENT.ordinal(),
+            mController.obtainMessage(BluetoothComController.SmMessage.AT_DEBUG_CLIENT.ordinal(),
                     -1, -1, str).sendToTarget();
         } catch (NullPointerException e) {
             //mit loglvl Debug und Filter: ClientThread ergibt als Fehler null -> NullPointer

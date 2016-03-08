@@ -27,7 +27,7 @@ public final class BluetoothModel extends Observable {
     /**
      * Das HashSet wird von BluetoothAdapter.getBondedDevices() verwendet.
      */
-    private Set<BluetoothConnection> bluetoothConnections = new HashSet<BluetoothConnection>(Controller.MAX_NUMBER_OF_DEVICES);
+    private Set<BluetoothConnection> bluetoothConnections = new HashSet<BluetoothConnection>(BluetoothComController.MAX_NUMBER_OF_DEVICES);
 
     /**
      * Speichert die eingegangenen Nachrichten.
