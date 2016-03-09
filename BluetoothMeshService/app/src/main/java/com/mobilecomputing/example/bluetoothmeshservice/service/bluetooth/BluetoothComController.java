@@ -1,6 +1,7 @@
 package com.mobilecomputing.example.bluetoothmeshservice.service.bluetooth;
 
 import android.app.Activity;
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -14,7 +15,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.UUID;
 
-import fllog.Log;
+//import fllog.Log;
+import android.util.Log;
 
 /**
  * Created by Jan Urbansky on 19.12.2015.
@@ -27,7 +29,7 @@ import fllog.Log;
 public final class BluetoothComController extends StateMachine {
 
     private static final String TAG = "fhflController";
-    private Activity mActivity = null;
+    private Service mService = null;
     private BluetoothModel bt_model;
     private MessageStorage messageStorage = null;
     private BroadcastReceiver mBroadCastReceiver;
@@ -92,12 +94,13 @@ public final class BluetoothComController extends StateMachine {
         messageStorage = new MessageStorage();
     }
 
-    protected void init(Activity a, BluetoothModel bt_model) {
+    public void init(Service service, BluetoothModel bt_model) {
         Log.d(TAG, "init()");
 
-        mActivity = a;
+        mService = service;
         this.bt_model = bt_model;
         initBroadcastReceiver();
+        this.startBluetoothCycle();
         // send message for start transition
 
     }
@@ -227,7 +230,8 @@ public final class BluetoothComController extends StateMachine {
                         if (!mBluetoothAdapter.isEnabled()) {
                             Log.d(TAG, "Try to enable Bluetooth.");
                             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                            mActivity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT); //siehe onActivityResult in MainActivity
+                           // mService.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT); //siehe onActivityResult in MainActivity
+                            mBluetoothAdapter.enable();
                             //warte auf den Intent
                             sendSmMessage(SmMessage.WAIT_FOR_INTENT.ordinal(), 0, 0, null);
 
@@ -241,7 +245,8 @@ public final class BluetoothComController extends StateMachine {
                         //das Gerät sichtbar schalten
                         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
                         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0); //0 bedeutet, dass das Gerät immer sichtbar ist.
-                        mActivity.startActivityForResult(discoverableIntent, REQUEST_ENABLE_DISCO);//siehe onActivityResult in MainActivity
+                        //mActivity.startActivityForResult(discoverableIntent, REQUEST_ENABLE_DISCO);//siehe onActivityResult in MainActivity
+                        mBluetoothAdapter.startDiscovery();
                         sendSmMessage(SmMessage.WAIT_FOR_INTENT.ordinal(), 0, 0, null);
                         break;
 
@@ -580,11 +585,9 @@ public final class BluetoothComController extends StateMachine {
         IntentFilter discoveryFinishedFilter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 
         //der Receiver handelt die actions.
-        mActivity.registerReceiver(mBroadCastReceiver, actionFoundFilter);
-
-        mActivity.registerReceiver(mBroadCastReceiver, discoveryStartedFilter);
-
-        mActivity.registerReceiver(mBroadCastReceiver, discoveryFinishedFilter);
+        mService.registerReceiver(mBroadCastReceiver, actionFoundFilter);
+        mService.registerReceiver(mBroadCastReceiver, discoveryStartedFilter);
+        mService.registerReceiver(mBroadCastReceiver, discoveryFinishedFilter);
     }
 
 

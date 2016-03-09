@@ -34,7 +34,7 @@ public final class BluetoothModel extends Observable {
      */
     private Message currentMessage = null;
 
-    protected BluetoothModel() {
+    public BluetoothModel() {
         Log.d(TAG, "BluetoothModel()");
     }
 

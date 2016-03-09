@@ -1,5 +1,6 @@
 package com.mobilecomputing.example.bluetoothmeshservice.service;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.mobilecomputing.example.bluetoothmeshservice.service.bluetooth.BluetoothComController;
+import com.mobilecomputing.example.bluetoothmeshservice.service.bluetooth.BluetoothModel;
 
 /**
  * Created by Jan Urbansky on 02.03.2016.
@@ -19,16 +21,16 @@ public final class MeshnetworkService extends Service {
     private final IBinder mBinder = new MeshnetworkBinder();
 
     private BluetoothComController mBluetoothController = null;
+    private BluetoothModel mBluetoothModel = null;
 
 
-    private boolean IS_RUNNING = false;
+    private boolean IS_STARTED = false;
 
     @Override
     public void onCreate() {
         Log.i(TAG, "Service created!");
         Log.d(TAG, "onCreate");
         super.onCreate();
-        IS_RUNNING = true;
     }
 
     @Override
@@ -36,22 +38,31 @@ public final class MeshnetworkService extends Service {
         Log.i(TAG, "Service destroyed!");
         Log.d(TAG, "onDestroy");
         super.onDestroy();
-        IS_RUNNING = false; //not needed! -> if the service is killed, it has to be recreated
+        IS_STARTED = false; //not needed! -> if the service is killed, it has to be recreated
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
-        if(!IS_RUNNING){
+        if(!IS_STARTED){
+            Log.d(TAG, "IS_STARTED == FALSE");
+            IS_STARTED = true;
+            Log.i(TAG, "Starting thread");
+            mBluetoothController = new BluetoothComController();
+            mBluetoothModel = new BluetoothModel();
+            mBluetoothController.init(this, mBluetoothModel);
             //do something
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    /*Log.i(TAG, "Starting thread");
                     mBluetoothController = new BluetoothComController();
+                    mBluetoothModel = new BluetoothModel();
+                    mBluetoothController.init(new Activity(), mBluetoothModel);*/
 
                 }
             }).start();
-            IS_RUNNING = true;
+
 
         }
         return Service.START_STICKY;

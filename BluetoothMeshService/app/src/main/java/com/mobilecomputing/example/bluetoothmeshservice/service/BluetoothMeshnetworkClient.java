@@ -54,10 +54,12 @@ public class BluetoothMeshnetworkClient {
         //First, start the service. Then bind to it. This results into a started service. The binding
         //enables a nice message interface. TODO: Test if service is already running!
         Intent meshNetworkServiceIntent = new Intent(mActivity, MeshnetworkService.class);
-        if(!MeshnetworkService.IS_RUNNING){
-            Log.i(TAG, "starting Service");
-            mActivity.startService(meshNetworkServiceIntent);
-        }
+
+        Log.i(TAG, "starting Service");
+
+        mActivity.startService(meshNetworkServiceIntent); //the service handles the evaluation of
+                                                        //  multiple onStartCommands
+
         Log.i(TAG, "binding to Service");
         mActivity.bindService(meshNetworkServiceIntent, mConnection, Context.BIND_AUTO_CREATE);
 
